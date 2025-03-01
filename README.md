@@ -1,3 +1,26 @@
+# Newsletter App
+
+A web application for job postings and newsletter subscriptions.
+
+## Getting Started
+
+1. Install dependencies:
+   ```bash
+   npm install
+   cd server
+   npm install
+   cd ..
+   ```
+
+2. Start the application:
+   ```bash
+   npm start
+   ```
+
+This will start both:
+- Frontend at http://localhost:3000
+- Backend at http://localhost:5000
+
 # Getting Started with Create React App
 
 This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).

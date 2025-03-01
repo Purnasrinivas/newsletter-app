@@ -1,0 +1,275 @@
+.newsletter-page {
+  padding: 2rem;
+  max-width: 1200px;
+  margin: 80px auto 0;
+}
+
+.newsletter-header {
+  text-align: center;
+  margin-bottom: 2rem;
+}
+
+.newsletter-header h1 {
+  font-size: 2.5rem;
+  color: #333;
+  margin-bottom: 0.5rem;
+}
+
+.newsletter-header p {
+  color: #666;
+  font-size: 1.1rem;
+}
+
+.newsletter-tabs {
+  display: flex;
+  gap: 1rem;
+  margin-bottom: 2rem;
+  border-bottom: 1px solid #ddd;
+  padding-bottom: 1rem;
+}
+
+.tab {
+  padding: 0.5rem 1rem;
+  border: none;
+  background: none;
+  font-size: 1.1rem;
+  cursor: pointer;
+  color: #666;
+  border-bottom: 2px solid transparent;
+}
+
+.tab.active {
+  color: #2196f3;
+  border-bottom-color: #2196f3;
+}
+
+.subscribe-button {
+  margin-left: auto;
+  padding: 0.5rem 1.5rem;
+  background: #2196f3;
+  color: white;
+  text-decoration: none;
+  border-radius: 4px;
+  transition: background-color 0.3s;
+}
+
+.subscribe-button:hover {
+  background: #1976d2;
+}
+
+.newsletter-content {
+  background: #fff;
+  padding: 2rem;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.latest-newsletter {
+  max-width: 800px;
+  margin: 0 auto;
+}
+
+.newsletter-preview {
+  margin-top: 2rem;
+}
+
+.cta-section {
+  margin-top: 3rem;
+  text-align: center;
+  padding: 2rem;
+  background: #f5f5f5;
+  border-radius: 8px;
+}
+
+.cta-button {
+  display: inline-block;
+  padding: 0.75rem 2rem;
+  background: #2196f3;
+  color: white;
+  text-decoration: none;
+  border-radius: 4px;
+  margin-top: 1rem;
+  transition: background-color 0.3s;
+}
+
+.cta-button:hover {
+  background: #1976d2;
+}
+
+.archive-list {
+  display: grid;
+  gap: 1.5rem;
+}
+
+.archive-item {
+  padding: 1.5rem;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  transition: transform 0.3s;
+}
+
+.archive-item:hover {
+  transform: translateY(-2px);
+}
+
+.archive-item h3 {
+  margin: 0 0 0.5rem;
+  color: #333;
+}
+
+.archive-item p {
+  margin: 0;
+  color: #666;
+}
+
+.newsletter-section {
+  margin: 2rem 0;
+  padding: 1.5rem;
+  background: white;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.jobs-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+  gap: 1rem;
+  margin-top: 1rem;
+}
+
+.job-card {
+  position: relative;
+  padding: 1rem;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  overflow: hidden;
+}
+
+.job-card.selected {
+  border-color: #2196f3;
+  background: #e3f2fd;
+}
+
+.job-card-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(33, 150, 243, 0.1);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0;
+  transition: opacity 0.3s;
+}
+
+.job-card:hover .job-card-overlay {
+  opacity: 1;
+}
+
+.newsletter-editor {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.newsletter-editor input,
+.newsletter-editor textarea {
+  width: 100%;
+  padding: 0.75rem;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  font-size: 1rem;
+}
+
+.newsletter-editor textarea {
+  min-height: 100px;
+  resize: vertical;
+}
+
+.selected-jobs {
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  padding: 1rem;
+  margin: 1rem 0;
+}
+
+.selected-job-item {
+  padding: 1rem;
+  border-bottom: 1px solid #eee;
+}
+
+.selected-job-item:last-child {
+  border-bottom: none;
+}
+
+.newsletter-actions {
+  display: flex;
+  gap: 1rem;
+  margin-top: 1rem;
+}
+
+.newsletter-actions button {
+  padding: 0.75rem 1.5rem;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-weight: 500;
+  transition: background-color 0.3s;
+}
+
+.newsletter-actions button:first-child {
+  background: #f5f5f5;
+  color: #333;
+}
+
+.send-button {
+  background: #2196f3;
+  color: white;
+}
+
+.send-button:disabled {
+  opacity: 0.7;
+  cursor: not-allowed;
+}
+
+.loading-message,
+.error-message,
+.no-jobs-message {
+  text-align: center;
+  padding: 2rem;
+  margin: 2rem 0;
+  background: white;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.loading-message {
+  color: #2196f3;
+}
+
+.error-message {
+  color: #f44336;
+}
+
+.no-jobs-message {
+  color: #666;
+}
+
+.refresh-button {
+  margin-top: 1rem;
+  padding: 0.5rem 1rem;
+  background: #2196f3;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: background-color 0.3s;
+}
+
+.refresh-button:hover {
+  background: #1976d2;
+} 
