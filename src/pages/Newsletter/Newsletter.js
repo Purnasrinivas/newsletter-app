@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { getJobs } from '../src/services/api';
+import { getJobs, sendNewsletter } from '../../services/api';
 import './Newsletter.css';
 
 function Newsletter() {
@@ -10,73 +10,77 @@ function Newsletter() {
     intro: 'Here are the latest job opportunities:',
     outro: 'Best regards,\nJob Newsletter Team'
   });
+  const [selectedCategory, setSelectedCategory] = useState('All');
   const [isEditing, setIsEditing] = useState(false);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
-  useEffect(() => {
-    loadJobs();
-  }, []);
+  const categories = ['All', 'Software Developer', 'DevOps Engineer', 'Data Analyst', 'UI/UX Designer', 'Project Manager'];
 
   const loadJobs = async () => {
     try {
       setLoading(true);
       setError(null);
       console.log('Fetching jobs...');
-      const response = await fetch('/api/jobs');
-      console.log('Response status:', response.status);
-      
-      if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
-      }
 
-      const data = await response.json();
-      console.log('Received jobs data:', data);
-      
-      if (!Array.isArray(data)) {
-        console.error('Expected array of jobs but got:', data);
+      const jobsData = await getJobs();
+      console.log('Received jobs:', jobsData);
+
+      if (!Array.isArray(jobsData)) {
         throw new Error('Invalid jobs data received');
       }
 
-      setJobs(data);
+      const sortedJobs = jobsData.sort((a, b) => 
+        new Date(b.datePosted || Date.now()) - new Date(a.datePosted || Date.now())
+      );
+
+      console.log('Sorted jobs:', sortedJobs);
+      setJobs(sortedJobs);
     } catch (error) {
       console.error('Failed to load jobs:', error);
-      setError(error.message || 'Failed to load jobs');
+      setError(error.message);
     } finally {
       setLoading(false);
     }
   };
 
-  // Add auto-refresh every 30 seconds
+  const handleRefresh = () => {
+    loadJobs();
+  };
+
   useEffect(() => {
-    const interval = setInterval(loadJobs, 30000);
+    loadJobs();
+    // Don't poll too frequently in production
+    const interval = setInterval(loadJobs, 10000);
     return () => clearInterval(interval);
   }, []);
 
+  const filteredJobs = selectedCategory === 'All' 
+    ? jobs 
+    : jobs.filter(job => job.category && job.category.includes(selectedCategory));
+
   const toggleJobSelection = (job) => {
     setSelectedJobs(prev => 
-      prev.includes(job) 
-        ? prev.filter(j => j.id !== job.id)
+      prev.some(j => j._id === job._id) 
+        ? prev.filter(j => j._id !== job._id)
         : [...prev, job]
     );
   };
 
+  const handleEditToggle = () => {
+    setIsEditing(!isEditing);
+  };
+
   const handleSendNewsletter = async () => {
     try {
-      const response = await fetch('/api/send-newsletter', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          subject: newsletterContent.subject,
-          jobs: selectedJobs,
-          intro: newsletterContent.intro,
-          outro: newsletterContent.outro
-        })
+      const response = await sendNewsletter({
+        subject: newsletterContent.subject,
+        intro: newsletterContent.intro,
+        jobs: selectedJobs,
+        outro: newsletterContent.outro,
+        category: selectedCategory !== 'All' ? selectedCategory : null
       });
 
-      if (!response.ok) throw new Error('Failed to send newsletter');
       alert('Newsletter sent successfully!');
       setSelectedJobs([]);
       setIsEditing(false);
@@ -86,42 +90,71 @@ function Newsletter() {
     }
   };
 
-  // Add refresh button
-  const handleRefresh = () => {
-    loadJobs();
-  };
-
   return (
     <div className="newsletter-page">
       <div className="newsletter-header">
         <h1>Job Newsletter</h1>
         <p>Compose and send job newsletters to subscribers</p>
-        <button onClick={handleRefresh} className="refresh-button">
-          Refresh Jobs
-        </button>
+        
+        <div className="newsletter-controls">
+          <div className="category-selector">
+            <label htmlFor="category-select">Filter by category:</label>
+            <select 
+              id="category-select" 
+              value={selectedCategory}
+              onChange={(e) => setSelectedCategory(e.target.value)}
+              className="category-select"
+            >
+              {categories.map(cat => (
+                <option key={cat} value={cat}>{cat}</option>
+              ))}
+            </select>
+          </div>
+          
+          <button onClick={handleRefresh} className="refresh-button">
+            Refresh Jobs
+          </button>
+        </div>
       </div>
 
       {loading ? (
-        <div className="loading-message">Loading jobs...</div>
+        <div className="loading-message">
+          <div className="loading-spinner"></div>
+          <p>Loading jobs...</p>
+        </div>
       ) : error ? (
         <div className="error-message">{error}</div>
-      ) : jobs.length === 0 ? (
-        <div className="no-jobs-message">No jobs available yet.</div>
+      ) : filteredJobs.length === 0 ? (
+        <div className="no-jobs-message">
+          {jobs.length === 0 
+            ? "No jobs available yet. Add jobs from the Post Job tab." 
+            : `No jobs found in the "${selectedCategory}" category.`}
+        </div>
       ) : (
         <div className="newsletter-section">
-          <h2>Available Jobs ({jobs.length})</h2>
+          <h2>Available Jobs ({filteredJobs.length})</h2>
           <div className="jobs-grid">
-            {jobs.map(job => (
+            {filteredJobs.map(job => (
               <div 
-                key={job.id}
-                className={`job-card ${selectedJobs.includes(job) ? 'selected' : ''}`}
+                key={job._id}
+                className={`job-card ${selectedJobs.some(j => j._id === job._id) ? 'selected' : ''}`}
                 onClick={() => toggleJobSelection(job)}
               >
-                <h3>{job.title}</h3>
-                <p>{job.company}</p>
-                <p>{job.location}</p>
+                <div className="job-card-content">
+                  <h3>{job.title}</h3>
+                  <p className="company">{job.company}</p>
+                  <p className="location">{job.location}</p>
+                  
+                  {job.category && job.category.length > 0 && (
+                    <div className="job-categories">
+                      {job.category.map(cat => (
+                        <span key={cat} className="job-category-tag">{cat}</span>
+                      ))}
+                    </div>
+                  )}
+                </div>
                 <div className="job-card-overlay">
-                  {selectedJobs.includes(job) ? 'Selected' : 'Click to Select'}
+                  {selectedJobs.some(j => j._id === job._id) ? 'Selected' : 'Click to Select'}
                 </div>
               </div>
             ))}
@@ -131,46 +164,59 @@ function Newsletter() {
 
       {selectedJobs.length > 0 && (
         <div className="newsletter-section">
-          <h2>Newsletter Content</h2>
-          <div className="newsletter-editor">
-            <input
-              type="text"
-              value={newsletterContent.subject}
-              onChange={e => setNewsletterContent(prev => ({ ...prev, subject: e.target.value }))}
-              placeholder="Newsletter Subject"
-              disabled={!isEditing}
-            />
-            <textarea
-              value={newsletterContent.intro}
-              onChange={e => setNewsletterContent(prev => ({ ...prev, intro: e.target.value }))}
-              placeholder="Introduction Text"
-              disabled={!isEditing}
-            />
+          <div className="newsletter-header-actions">
+            <h2>Selected Jobs ({selectedJobs.length})</h2>
+            <button onClick={handleEditToggle} className="edit-button">
+              {isEditing ? 'Done Editing' : 'Edit Newsletter'}
+            </button>
+          </div>
+
+          {isEditing ? (
+            <div className="newsletter-editor">
+              <input
+                type="text"
+                value={newsletterContent.subject}
+                onChange={e => setNewsletterContent(prev => ({ ...prev, subject: e.target.value }))}
+                placeholder="Newsletter Subject"
+                className="newsletter-input"
+              />
+              <textarea
+                value={newsletterContent.intro}
+                onChange={e => setNewsletterContent(prev => ({ ...prev, intro: e.target.value }))}
+                placeholder="Introduction Text"
+                className="newsletter-textarea"
+              />
+              <div className="selected-jobs">
+                {selectedJobs.map(job => (
+                  <div key={job._id} className="selected-job-item">
+                    <h3>{job.title}</h3>
+                    <p>{job.company} - {job.location}</p>
+                  </div>
+                ))}
+              </div>
+              <textarea
+                value={newsletterContent.outro}
+                onChange={e => setNewsletterContent(prev => ({ ...prev, outro: e.target.value }))}
+                placeholder="Closing Text"
+                className="newsletter-textarea"
+              />
+            </div>
+          ) : (
             <div className="selected-jobs">
               {selectedJobs.map(job => (
-                <div key={job.id} className="selected-job-item">
+                <div key={job._id} className="selected-job-item">
                   <h3>{job.title}</h3>
                   <p>{job.company} - {job.location}</p>
-                  <p>{job.description}</p>
                 </div>
               ))}
             </div>
-            <textarea
-              value={newsletterContent.outro}
-              onChange={e => setNewsletterContent(prev => ({ ...prev, outro: e.target.value }))}
-              placeholder="Closing Text"
-              disabled={!isEditing}
-            />
-          </div>
+          )}
+
           <div className="newsletter-actions">
-            <button onClick={() => setIsEditing(!isEditing)}>
-              {isEditing ? 'Preview' : 'Edit'}
+            <button onClick={() => setSelectedJobs([])} className="clear-button">
+              Clear Selection
             </button>
-            <button 
-              onClick={handleSendNewsletter}
-              disabled={isEditing}
-              className="send-button"
-            >
+            <button onClick={handleSendNewsletter} className="send-button">
               Send Newsletter
             </button>
           </div>
@@ -180,4 +226,4 @@ function Newsletter() {
   );
 }
 
-export default Newsletter; 
+export default Newsletter;

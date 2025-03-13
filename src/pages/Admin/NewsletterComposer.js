@@ -98,6 +98,7 @@ function NewsletterComposer() {
           onChange={e => setNewsletterContent(prev => ({ ...prev, outro: e.target.value }))}
         />
       </div>
+      
 
       <div className="composer-section">
         <h2>Select Jobs to Include</h2>
@@ -115,22 +116,6 @@ function NewsletterComposer() {
           ))}
         </div>
       </div>
-
-      <div className="composer-actions">
-        <button onClick={() => setPreview(!preview)}>
-          {preview ? 'Edit Newsletter' : 'Preview Newsletter'}
-        </button>
-        <button onClick={handleSendNewsletter}>Send Newsletter</button>
       </div>
-
-      {preview && (
-        <div className="newsletter-preview">
-          <h2>Newsletter Preview</h2>
-          <div dangerouslySetInnerHTML={{ __html: generateNewsletterHTML() }} />
-        </div>
-      )}
-    </div>
-  );
-}
-
+);}
 export default NewsletterComposer; 

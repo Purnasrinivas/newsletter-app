@@ -51,15 +51,15 @@ function Jobs() {
 
     try {
       // Format job data
-      const formattedJobData = {
-        title: jobData.title,
-        company: jobData.company,
-        location: jobData.location || 'Remote',
-        description: jobData.description,
-        requirements: jobData.requirements || 'Not specified',
-        applyLink: jobData.applyLink
-      };
-
+      // Format job data
+const formattedJobData = {
+  title: jobData.title,
+  company: jobData.company,
+  location: jobData.location || 'Remote',
+  description: jobData.description,
+  requirements: jobData.requirements || 'Not specified',
+  link: jobData.applyLink  // Change this from applyLink to link
+};
       console.log('Submitting formatted job data:', formattedJobData);
       const response = await submitJob(formattedJobData);
       console.log('Server response:', response);

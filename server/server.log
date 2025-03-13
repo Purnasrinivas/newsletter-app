@@ -1,0 +1,140 @@
+[2025-03-01T15:34:39.811Z] INFO: Simple log message
+[2025-03-01T15:34:39.815Z] INFO: Log with data
+  Data: {
+  "type": "test",
+  "value": 42
+}
+[2025-03-01T15:34:39.816Z] ERROR: Error test case
+  Error: Expected test error
+  Stack: Error: Expected test error
+    at Object.run (/Users/ASHRITHA/Downloads/newsletter-app/server/testLog.js:19:17)
+    at runLogTests (/Users/ASHRITHA/Downloads/newsletter-app/server/testLog.js:37:18)
+    at process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+    at async /Users/ASHRITHA/Downloads/newsletter-app/server/testLog.js:56:23
+[2025-03-01T15:34:39.817Z] DEBUG: Debug message
+  Data: {
+  "debugData": 123
+}
+[2025-03-01T15:38:17.091Z] INFO: Sending 1 jobs
+[2025-03-01T15:38:27.681Z] INFO: Sending 1 jobs
+[2025-03-01T15:38:48.321Z] INFO: Sending 1 jobs
+[2025-03-01T15:43:18.981Z] INFO: Successfully retrieved 0 jobs
+[2025-03-01T15:43:29.848Z] INFO: Successfully retrieved 0 jobs
+[2025-03-01T15:43:57.564Z] INFO: Successfully retrieved 0 jobs
+[2025-03-01T15:43:59.726Z] INFO: Successfully retrieved 0 jobs
+[2025-03-01T15:44:03.302Z] INFO: Successfully retrieved 0 jobs
+[2025-03-01T15:46:43.946Z] INFO: Jobs file verified successfully
+[2025-03-01T15:47:25.391Z] INFO: Jobs file verified successfully
+[2025-03-01T15:47:25.391Z] INFO: Retrieved 0 jobs
+[2025-03-01T15:47:36.880Z] INFO: Jobs file verified successfully
+[2025-03-01T15:47:36.881Z] INFO: Retrieved 0 jobs
+[2025-03-01T15:47:54.161Z] INFO: Jobs file verified successfully
+[2025-03-01T15:47:54.162Z] INFO: Retrieved 0 jobs
+[2025-03-01T15:51:35.608Z] INFO: Jobs file verified successfully. Contains 0 jobs.
+[2025-03-01T15:52:31.509Z] INFO: Jobs file verified successfully. Contains 0 jobs.
+[2025-03-01T15:52:31.510Z] INFO: Successfully retrieved 0 jobs
+[2025-03-01T15:54:38.996Z] INFO: Jobs file verified. Contains 2 jobs.
+[2025-03-01T15:54:55.116Z] INFO: Jobs file verified. Contains 2 jobs.
+[2025-03-01T15:54:55.117Z] INFO: Successfully retrieved 2 jobs
+[2025-03-01T15:55:07.527Z] INFO: Jobs file verified. Contains 2 jobs.
+[2025-03-01T15:55:07.527Z] INFO: Successfully retrieved 2 jobs
+[2025-03-01T15:58:13.727Z] INFO: Jobs file verified. Contains 0 jobs.
+[2025-03-01T15:58:33.038Z] INFO: Jobs file verified. Contains 0 jobs.
+[2025-03-01T15:58:33.039Z] INFO: Successfully retrieved 0 jobs
+[2025-03-01T15:58:42.891Z] INFO: Jobs file verified. Contains 0 jobs.
+[2025-03-01T15:58:42.891Z] INFO: Successfully retrieved 0 jobs
+[2025-03-01T16:01:43.150Z] INFO: Jobs file verified. Contains 0 jobs.
+[2025-03-01T16:01:51.108Z] INFO: Jobs file verified. Contains 0 jobs.
+[2025-03-01T16:01:51.110Z] INFO: Successfully retrieved 0 jobs
+[2025-03-01T16:02:42.136Z] INFO: Jobs file verified. Contains 0 jobs.
+[2025-03-01T16:02:42.137Z] INFO: Successfully retrieved 0 jobs
+[2025-03-01T16:02:43.339Z] INFO: Jobs file verified. Contains 0 jobs.
+[2025-03-01T16:02:43.339Z] INFO: Successfully retrieved 0 jobs
+[2025-03-01T16:02:44.753Z] INFO: Jobs file verified. Contains 0 jobs.
+[2025-03-01T16:02:44.754Z] INFO: Successfully retrieved 0 jobs
+[2025-03-01T16:10:07.435Z] INFO: Jobs file verified. Contains 0 jobs.
+[2025-03-01T16:10:27.197Z] INFO: Jobs file verified. Contains 0 jobs.
+[2025-03-01T16:10:27.198Z] INFO: Successfully retrieved 0 jobs
+[2025-03-01T16:14:18.356Z] INFO: Jobs file verified. Contains 0 jobs.
+[2025-03-01T16:14:32.016Z] INFO: Jobs file verified. Contains 0 jobs.
+[2025-03-01T16:14:32.016Z] INFO: Successfully retrieved 0 jobs
+[2025-03-01T16:19:45.013Z] INFO: Jobs file verified. Contains 0 jobs.
+[2025-03-01T16:22:37.256Z] INFO: Jobs file verified. Contains 0 jobs.
+[2025-03-01T16:22:40.970Z] INFO: Jobs file verified. Contains 0 jobs.
+[2025-03-01T16:22:40.971Z] INFO: Successfully retrieved 0 jobs
+[2025-03-01T16:22:50.455Z] INFO: Jobs file verified. Contains 0 jobs.
+[2025-03-01T16:22:50.456Z] INFO: Successfully retrieved 0 jobs
+[2025-03-01T16:25:55.624Z] INFO: Jobs file verified. Contains 1 jobs.
+[2025-03-01T16:26:07.777Z] INFO: Retrieved 1 jobs
+[2025-03-01T16:26:15.792Z] INFO: Retrieved 1 jobs
+[2025-03-01T16:30:22.860Z] INFO: Jobs file verified. Contains 0 jobs.
+[2025-03-01T16:31:11.634Z] INFO: Processing GET /jobs request
+[2025-03-01T16:31:11.635Z] INFO: Sending 0 jobs
+[2025-03-01T16:31:21.313Z] INFO: Processing GET /jobs request
+[2025-03-01T16:31:21.314Z] INFO: Sending 0 jobs
+[2025-03-01T16:35:58.636Z] INFO: Jobs file verified. Contains 0 jobs.
+[2025-03-01T16:36:53.510Z] INFO: GET /jobs - Request received
+[2025-03-01T16:36:53.511Z] INFO: jobs.json content:
+  Data: "[]"
+[2025-03-01T16:36:53.512Z] INFO: Found 0 jobs
+[2025-03-01T16:37:06.761Z] INFO: GET /jobs - Request received
+[2025-03-01T16:37:06.762Z] INFO: jobs.json content:
+  Data: "[]"
+[2025-03-01T16:37:06.762Z] INFO: Found 0 jobs
+[2025-03-01T16:40:03.441Z] INFO: Jobs file verified. Contains 1 jobs.
+[2025-03-01T16:40:40.964Z] INFO: GET /jobs - Starting request
+[2025-03-01T16:40:40.965Z] INFO: Read jobs.json content:
+  Data: "[\n  {\n    \"id\": \"1\",\n    \"title\": \"Sample Developer Position\",\n    \"company\": \"Test Company\",\n    \"location\": \"Remote\",\n    \"description\": \"This is a sample job posting\",\n    \"link\": \"https://example.com\",\n    \"datePosted\": \"2025-03-01T16:39:44.625Z\"\n  }\n]"
+[2025-03-01T16:40:40.965Z] INFO: Sending 1 jobs
+[2025-03-01T16:40:50.543Z] INFO: GET /jobs - Starting request
+[2025-03-01T16:40:50.543Z] INFO: Read jobs.json content:
+  Data: "[\n  {\n    \"id\": \"1\",\n    \"title\": \"Sample Developer Position\",\n    \"company\": \"Test Company\",\n    \"location\": \"Remote\",\n    \"description\": \"This is a sample job posting\",\n    \"link\": \"https://example.com\",\n    \"datePosted\": \"2025-03-01T16:39:44.625Z\"\n  }\n]"
+[2025-03-01T16:40:50.544Z] INFO: Sending 1 jobs
+[2025-03-01T16:41:04.294Z] INFO: GET /jobs - Starting request
+[2025-03-01T16:41:04.294Z] INFO: Read jobs.json content:
+  Data: "[\n  {\n    \"id\": \"1\",\n    \"title\": \"Sample Developer Position\",\n    \"company\": \"Test Company\",\n    \"location\": \"Remote\",\n    \"description\": \"This is a sample job posting\",\n    \"link\": \"https://example.com\",\n    \"datePosted\": \"2025-03-01T16:39:44.625Z\"\n  }\n]"
+[2025-03-01T16:41:04.294Z] INFO: Sending 1 jobs
+[2025-03-01T16:45:27.075Z] INFO: Jobs file verified. Contains 0 jobs.
+[2025-03-01T16:45:47.925Z] INFO: GET /jobs - Starting request
+[2025-03-01T16:45:47.927Z] INFO: Read jobs.json content:
+  Data: "[]\n"
+[2025-03-01T16:45:47.928Z] INFO: Sending 0 jobs
+[2025-03-01T16:45:57.293Z] INFO: GET /jobs - Starting request
+[2025-03-01T16:45:57.293Z] INFO: Read jobs.json content:
+  Data: "[]\n"
+[2025-03-01T16:45:57.293Z] INFO: Sending 0 jobs
+[2025-03-01T16:50:03.611Z] INFO: Jobs file verified. Contains 0 jobs.
+[2025-03-01T16:50:22.926Z] INFO: GET /jobs - Starting request
+[2025-03-01T16:50:22.926Z] INFO: Read jobs.json content:
+  Data: "[]\n"
+[2025-03-01T16:50:22.928Z] INFO: Sending 0 jobs
+[2025-03-01T16:50:32.354Z] INFO: GET /jobs - Starting request
+[2025-03-01T16:50:32.355Z] INFO: Read jobs.json content:
+  Data: "[]\n"
+[2025-03-01T16:50:32.355Z] INFO: Sending 0 jobs
+[2025-03-01T16:54:08.115Z] INFO: Jobs file verified. Contains 0 jobs.
+[2025-03-01T16:54:30.776Z] INFO: GET /jobs - Starting request
+[2025-03-01T16:54:30.777Z] INFO: Read jobs.json content:
+  Data: "[]\n"
+[2025-03-01T16:54:30.777Z] INFO: Sending 0 jobs
+[2025-03-01T16:54:42.410Z] INFO: GET /jobs - Starting request
+[2025-03-01T16:54:42.410Z] INFO: Read jobs.json content:
+  Data: "[]\n"
+[2025-03-01T16:54:42.411Z] INFO: Sending 0 jobs
+[2025-03-02T15:22:29.137Z] INFO: Jobs file verified. Contains 0 jobs.
+[2025-03-02T15:28:35.277Z] INFO: GET /jobs - Starting request
+[2025-03-02T15:28:35.278Z] INFO: Read jobs.json content:
+  Data: "[]\n"
+[2025-03-02T15:28:35.279Z] INFO: Sending 0 jobs
+[2025-03-02T15:28:37.227Z] INFO: GET /jobs - Starting request
+[2025-03-02T15:28:37.228Z] INFO: Read jobs.json content:
+  Data: "[]\n"
+[2025-03-02T15:28:37.228Z] INFO: Sending 0 jobs
+[2025-03-02T15:29:09.476Z] INFO: GET /jobs - Starting request
+[2025-03-02T15:29:09.477Z] INFO: Read jobs.json content:
+  Data: "[]\n"
+[2025-03-02T15:29:09.478Z] INFO: Sending 0 jobs
+[2025-03-02T15:29:11.243Z] INFO: GET /jobs - Starting request
+[2025-03-02T15:29:11.244Z] INFO: Read jobs.json content:
+  Data: "[]\n"
+[2025-03-02T15:29:11.245Z] INFO: Sending 0 jobs
