@@ -2,25 +2,29 @@ import React, { useState, useEffect } from 'react';
 import { getJobs, sendNewsletter, updateJob } from '../../services/api';
 import './Newsletter.css';
 
+const jobCategories = [
+  'Software Developer',
+  'DevOps Engineer',
+  'Data Analyst',
+  'UI/UX Designer',
+  'Project Manager'
+];
+
 function Newsletter() {
   const [jobs, setJobs] = useState([]);
   const [editingJob, setEditingJob] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [isEditingContent, setIsEditingContent] = useState(false);
   const [newsletterContent, setNewsletterContent] = useState({
     subject: 'Latest Job Opportunities',
     intro: 'Here are the latest job opportunities:',
     outro: 'Best regards,\nJob Newsletter Team'
   });
-  const [isEditingContent, setIsEditingContent] = useState(false);
 
-  const jobCategories = [
-    'Software Developer',
-    'DevOps Engineer',
-    'Data Analyst',
-    'UI/UX Designer',
-    'Project Manager'
-  ];
+  useEffect(() => {
+    loadJobs();
+  }, []);
 
   const loadJobs = async () => {
     try {
@@ -32,41 +36,33 @@ function Newsletter() {
       console.log('Received jobs:', jobsData);
 
       if (!Array.isArray(jobsData)) {
-        throw new Error('Invalid jobs data received');
+        console.error('Invalid jobs data format:', jobsData);
+        throw new Error('Invalid response format');
       }
 
-      const sortedJobs = jobsData.sort((a, b) => 
-        new Date(b.datePosted || Date.now()) - new Date(a.datePosted || Date.now())
-      );
-
-      console.log('Sorted jobs:', sortedJobs);
-      setJobs(sortedJobs);
+      setJobs(jobsData);
     } catch (error) {
       console.error('Failed to load jobs:', error);
-      setError(error.message);
+      setError('Failed to load jobs. Please try again later.');
+      setJobs([]);
     } finally {
       setLoading(false);
     }
   };
 
-  useEffect(() => {
-    loadJobs();
-    // Poll every 30 seconds
-    const interval = setInterval(loadJobs, 30000);
-    return () => clearInterval(interval);
-  }, []);
-
   // Group jobs by category
   const jobsByCategory = jobs.reduce((acc, job) => {
-    if (!job.category || !Array.isArray(job.category)) return acc;
+    if (!job.category || !Array.isArray(job.category)) {
+      return acc;
+    }
     
     job.category.forEach(cat => {
-      if (!acc[cat]) acc[cat] = [];
-      // Only add the job if it's not already in this category's array
-      if (!acc[cat].some(j => j._id === job._id)) {
-        acc[cat].push(job);
+      if (!acc[cat]) {
+        acc[cat] = [];
       }
+      acc[cat].push(job);
     });
+    
     return acc;
   }, {});
 
@@ -150,48 +146,49 @@ function Newsletter() {
   }
 
   if (error && jobs.length === 0) {
-    return <div className="error">Error: {error}</div>;
+    return (
+      <div className="error-message">
+        <h2>Error</h2>
+        <p>{error}</p>
+        <button onClick={loadJobs}>Try Again</button>
+      </div>
+    );
   }
 
   return (
     <div className="newsletter-page">
-      <h1>Newsletter Manager</h1>
+      <h1>Job Newsletter</h1>
       
       <div className="newsletter-content-editor">
-        <h2>Newsletter Template</h2>
+        <h2>Newsletter Content</h2>
         <button onClick={toggleEditContent} className="edit-content-button">
-          {isEditingContent ? 'Preview' : 'Edit'}
+          {isEditingContent ? 'Save' : 'Edit Content'}
         </button>
         
         {isEditingContent ? (
           <div className="newsletter-form">
             <div className="form-group">
-              <label htmlFor="subject">Subject Line</label>
+              <label>Subject Line Template</label>
               <input
                 type="text"
-                id="subject"
                 name="subject"
                 value={newsletterContent.subject}
                 onChange={handleNewsletterContentChange}
                 className="newsletter-input"
               />
             </div>
-            
             <div className="form-group">
-              <label htmlFor="intro">Introduction</label>
+              <label>Introduction</label>
               <textarea
-                id="intro"
                 name="intro"
                 value={newsletterContent.intro}
                 onChange={handleNewsletterContentChange}
                 className="newsletter-textarea"
               />
             </div>
-            
             <div className="form-group">
-              <label htmlFor="outro">Conclusion</label>
+              <label>Outro</label>
               <textarea
-                id="outro"
                 name="outro"
                 value={newsletterContent.outro}
                 onChange={handleNewsletterContentChange}
@@ -202,8 +199,10 @@ function Newsletter() {
         ) : (
           <div className="newsletter-preview">
             <p><strong>Subject:</strong> {newsletterContent.subject}</p>
-            <p><strong>Introduction:</strong> {newsletterContent.intro}</p>
-            <p><strong>Conclusion:</strong> {newsletterContent.outro}</p>
+            <p><strong>Intro:</strong> {newsletterContent.intro}</p>
+            <p><strong>Outro:</strong> {newsletterContent.outro.split('\n').map((line, i) => (
+              <span key={i}>{line}<br/></span>
+            ))}</p>
           </div>
         )}
       </div>
@@ -266,12 +265,8 @@ function Newsletter() {
                           className="edit-input"
                         />
                         <div className="edit-actions">
-                          <button type="button" onClick={handleJobUpdate} className="save-button">
-                            Save
-                          </button>
-                          <button type="button" onClick={handleCancelEdit} className="cancel-button">
-                            Cancel
-                          </button>
+                          <button onClick={handleJobUpdate} className="save-button">Save</button>
+                          <button onClick={handleCancelEdit} className="cancel-button">Cancel</button>
                         </div>
                       </div>
                     ) : (

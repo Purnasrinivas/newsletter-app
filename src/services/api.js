@@ -1,7 +1,8 @@
-const API_BASE_URL = process.env.REACT_APP_API_URL || '';
+const API_BASE_URL = '/api';
+
 export const updateJob = async (job) => {
   try {
-    const response = await fetch(`/api/jobs/${job._id}`, {
+    const response = await fetch(`${API_BASE_URL}/jobs/${job._id}`, {
       method: 'PUT',
       headers: {
         'Content-Type': 'application/json',
@@ -10,8 +11,9 @@ export const updateJob = async (job) => {
     });
     
     if (!response.ok) {
-      const errorData = await response.json();
-      throw new Error(errorData.message || 'Failed to update job');
+      const errorText = await response.text();
+      console.error('Server error response:', errorText);
+      throw new Error(`Failed to update job: ${response.status}`);
     }
     
     return await response.json();
@@ -20,12 +22,25 @@ export const updateJob = async (job) => {
     throw error;
   }
 };
+
 export const getJobs = async () => {
   try {
-    const response = await fetch('/api/jobs');
+    console.log('Fetching jobs from:', `${API_BASE_URL}/jobs`);
+    const response = await fetch(`${API_BASE_URL}/jobs`);
+    
     if (!response.ok) {
-      throw new Error('Failed to fetch jobs');
+      const errorText = await response.text();
+      console.error('Server error response:', errorText);
+      throw new Error(`Failed to fetch jobs: ${response.status}`);
     }
+    
+    const contentType = response.headers.get('content-type');
+    if (!contentType || !contentType.includes('application/json')) {
+      const text = await response.text();
+      console.error('Non-JSON response:', text.substring(0, 200) + '...');
+      throw new Error('Server did not return JSON');
+    }
+    
     return await response.json();
   } catch (error) {
     console.error('API error fetching jobs:', error);
@@ -35,7 +50,7 @@ export const getJobs = async () => {
 
 export const submitJob = async (jobData) => {
   try {
-    const response = await fetch('/api/jobs', {
+    const response = await fetch(`${API_BASE_URL}/jobs`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -44,8 +59,9 @@ export const submitJob = async (jobData) => {
     });
     
     if (!response.ok) {
-      const errorData = await response.json();
-      throw new Error(errorData.message || 'Failed to submit job');
+      const errorText = await response.text();
+      console.error('Server error response:', errorText);
+      throw new Error(`Failed to submit job: ${response.status}`);
     }
     
     return await response.json();
@@ -72,34 +88,30 @@ export const getSubscribers = async () => {
 
 export const addSubscriber = async (subscriberData) => {
   try {
-    console.log('Submitting subscriber data:', subscriberData);
-    
-    const response = await fetch(`${API_BASE_URL}/api/subscribers`, {
+    const response = await fetch(`${API_BASE_URL}/subscribers`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
       },
       body: JSON.stringify(subscriberData)
     });
-
-    const data = await response.json();
-    console.log('Server response:', data);
-
+    
     if (!response.ok) {
-      // Show more detailed error from server
-      throw new Error(data.message || 'Failed to add subscriber');
+      const errorText = await response.text();
+      console.error('Server error response:', errorText);
+      throw new Error(`Failed to add subscriber: ${response.status}`);
     }
-
-    return data;
+    
+    return await response.json();
   } catch (error) {
-    console.error('Failed to add subscriber:', error);
+    console.error('API error adding subscriber:', error);
     throw error;
   }
 };
 
 export const sendNewsletter = async (newsletterData) => {
   try {
-    const response = await fetch('/api/send-newsletter', {
+    const response = await fetch(`${API_BASE_URL}/newsletter/send`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -108,8 +120,9 @@ export const sendNewsletter = async (newsletterData) => {
     });
     
     if (!response.ok) {
-      const errorData = await response.json();
-      throw new Error(errorData.message || 'Failed to send newsletter');
+      const errorText = await response.text();
+      console.error('Server error response:', errorText);
+      throw new Error(`Failed to send newsletter: ${response.status}`);
     }
     
     return await response.json();

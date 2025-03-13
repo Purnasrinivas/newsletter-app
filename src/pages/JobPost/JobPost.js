@@ -83,90 +83,98 @@ function JobPost() {
     <div className="job-post-page">
       <h1>Post a New Job</h1>
       
+      
+      {submitSuccess && (
+        <div className="success-message">
+          Job posted successfully! Check the Newsletter tab.
+        </div>
+      )}
+      
       <form onSubmit={handleSubmit} className="job-post-form">
-        <input
-          type="text"
-          name="title"
-          value={job.title}
-          onChange={handleChange}
-          placeholder="Job Title"
-          required
-          className="job-post-input"
-        />
-        <input
-          type="text"
-          name="company"
-          value={job.company}
-          onChange={handleChange}
-          placeholder="Company Name"
-          required
-          className="job-post-input"
-        />
-        <input
-          type="text"
-          name="location"
-          value={job.location}
-          onChange={handleChange}
-          placeholder="Job Location (e.g. Remote, New York)"
-          className="job-post-input"
-        />
-        <textarea
-          name="description"
-          value={job.description}
-          onChange={handleChange}
-          placeholder="Job Description"
-          required
-          className="job-post-textarea"
-        />
-        <input
-          type="url"
-          name="link"
-          value={job.link}
-          onChange={handleChange}
-          placeholder="Application Link (https://...)"
-          required
-          className="job-post-input"
-        />
-        
         <div className="form-group">
+          <label htmlFor="title">Job Title</label>
+          <input
+            type="text"
+            id="title"
+            name="title"
+            value={job.title}
+            onChange={handleChange}
+            placeholder="e.g. Senior React Developer"
+            required
+            className="job-post-input"
+          />
+        </div>
+
+        <div className="form-group">
+          <label htmlFor="company">Company</label>
+          <input
+            type="text"
+            id="company"
+            name="company"
+            value={job.company}
+            onChange={handleChange}
+            placeholder="Company Name"
+            required
+            className="job-post-input"
+          />
+        </div>
+
+        <div className="form-group">
+          <label htmlFor="location">Location</label>
+          <input
+            type="text"
+            id="location"
+            name="location"
+            value={job.location}
+            onChange={handleChange}
+            placeholder="e.g. Remote, New York, etc."
+            className="job-post-input"
+          />
+        </div>
+
+        <div className="form-group">
+          <label htmlFor="description">Job Description</label>
+          <textarea
+            id="description"
+            name="description"
+            value={job.description}
+            onChange={handleChange}
+            placeholder="Describe the job responsibilities, requirements, etc."
+            required
+            className="job-post-textarea"
+          />
+        </div>
+
+        <div className="form-group categories-section">
           <label>Job Categories (Required)</label>
           <p className="helper-text">Select one or more categories for this job</p>
           
-          {/* Category Selection - Multiple Select Dropdown */}
-          <select 
-            multiple
-            value={job.category}
-            onChange={(e) => {
-              const selectedCategories = Array.from(e.target.selectedOptions, option => option.value);
-              setJob(prev => ({
-                ...prev,
-                category: selectedCategories
-              }));
-            }}
-            className="category-select"
-            required
-          >
-            {jobCategories.map(category => (
-              <option key={category} value={category}>
-                {category}
-              </option>
-            ))}
-          </select>
-          
-          {/* Alternative Category Selection - Checkboxes */}
           <div className="categories-grid">
             {jobCategories.map(category => (
-              <div key={category} className="category-checkbox">
-                <input
-                  type="checkbox"
-                  id={`category-${category}`}
-                  checked={job.category.includes(category)}
-                  onChange={() => handleCategoryChange(category)}
-                />
-                <label htmlFor={`category-${category}`}>{category}</label>
-              </div>
+              <button
+                key={category}
+                type="button"
+                className={`category-button ${job.category.includes(category) ? 'selected' : ''}`}
+                onClick={() => handleCategoryChange(category)}
+              >
+                {category}
+              </button>
             ))}
           </div>
+        </div>
+
+        <div className="form-group">
+          <label htmlFor="link">Application Link</label>
+          <input
+            type="url"
+            id="link"
+            name="link"
+            value={job.link}
+            onChange={handleChange}
+            placeholder="https://..."
+            required
+            className="job-post-input"
+          />
         </div>
         
         <button 

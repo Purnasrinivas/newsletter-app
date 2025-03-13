@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { getJobs } from '../../services/api';
+import { getJobs, sendNewsletter } from '../../services/api';
 import './NewsletterComposer.css';
 
 function NewsletterComposer() {
@@ -28,7 +28,7 @@ function NewsletterComposer() {
   const toggleJobSelection = (job) => {
     setSelectedJobs(prev => 
       prev.includes(job) 
-        ? prev.filter(j => j.id !== job.id)
+        ? prev.filter(j => j._id !== job._id)
         : [...prev, job]
     );
   };
@@ -44,8 +44,7 @@ function NewsletterComposer() {
           <p><strong>Company:</strong> ${job.company}</p>
           <p><strong>Location:</strong> ${job.location}</p>
           <p>${job.description}</p>
-          <p><strong>Requirements:</strong> ${job.requirements}</p>
-          <a href="${job.applyLink}">Apply Now</a>
+          <a href="${job.link}">Apply Now</a>
         </div>
       `).join('<hr>')}
       
@@ -55,20 +54,19 @@ function NewsletterComposer() {
 
   const handleSendNewsletter = async () => {
     try {
-      const response = await fetch('/api/send-newsletter', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          subject: newsletterContent.subject || 'New Job Opportunities Available',
-          html: generateNewsletterHTML()
-        })
+      const response = await sendNewsletter({
+        subject: newsletterContent.subject || 'New Job Opportunities Available',
+        intro: newsletterContent.intro || 'Here are the latest job opportunities:',
+        jobs: selectedJobs,
+        outro: newsletterContent.outro || 'Best regards,\nJob Newsletter Team',
+        categories: selectedJobs.flatMap(job => job.category || [])
       });
-
-      if (!response.ok) throw new Error('Failed to send newsletter');
       
-      alert('Newsletter sent successfully!');
+      if (response.success) {
+        alert('Newsletter sent successfully!');
+      } else {
+        throw new Error(response.message || 'Failed to send newsletter');
+      }
     } catch (error) {
       console.error('Failed to send newsletter:', error);
       alert('Failed to send newsletter. Please try again.');
@@ -105,7 +103,7 @@ function NewsletterComposer() {
         <div className="jobs-grid">
           {jobs.map(job => (
             <div 
-              key={job.id} 
+              key={job._id} 
               className={`job-card ${selectedJobs.includes(job) ? 'selected' : ''}`}
               onClick={() => toggleJobSelection(job)}
             >
