@@ -1,52 +1,56 @@
 const API_BASE_URL = process.env.REACT_APP_API_URL || '';
-
-export const getJobs = async () => {
+export const updateJob = async (job) => {
   try {
-    const response = await fetch(`${API_BASE_URL}/api/jobs`, {
+    const response = await fetch(`/api/jobs/${job._id}`, {
+      method: 'PUT',
       headers: {
-        'Cache-Control': 'no-cache',
-        'Pragma': 'no-cache'
-      }
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(job)
     });
     
     if (!response.ok) {
-      throw new Error('Failed to fetch jobs');
+      const errorData = await response.json();
+      throw new Error(errorData.message || 'Failed to update job');
     }
     
-    const data = await response.json();
-    console.log('API getJobs response:', data);
-    return data;
+    return await response.json();
   } catch (error) {
-    console.error('Error fetching jobs:', error);
+    console.error('API error updating job:', error);
+    throw error;
+  }
+};
+export const getJobs = async () => {
+  try {
+    const response = await fetch('/api/jobs');
+    if (!response.ok) {
+      throw new Error('Failed to fetch jobs');
+    }
+    return await response.json();
+  } catch (error) {
+    console.error('API error fetching jobs:', error);
     throw error;
   }
 };
 
 export const submitJob = async (jobData) => {
   try {
-    console.log('API submitJob called with data:', jobData);
-    
-    const response = await fetch(`${API_BASE_URL}/api/jobs`, {
+    const response = await fetch('/api/jobs', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
       },
       body: JSON.stringify(jobData)
     });
-
-    const data = await response.json();
-    console.log('API submit response:', data);
-
+    
     if (!response.ok) {
-      throw new Error(data.error || 'Failed to submit job');
+      const errorData = await response.json();
+      throw new Error(errorData.message || 'Failed to submit job');
     }
-
-    return {
-      success: true,
-      data: data
-    };
+    
+    return await response.json();
   } catch (error) {
-    console.error('Failed to submit job:', error);
+    console.error('API error submitting job:', error);
     throw error;
   }
 };
@@ -68,6 +72,8 @@ export const getSubscribers = async () => {
 
 export const addSubscriber = async (subscriberData) => {
   try {
+    console.log('Submitting subscriber data:', subscriberData);
+    
     const response = await fetch(`${API_BASE_URL}/api/subscribers`, {
       method: 'POST',
       headers: {
@@ -77,9 +83,11 @@ export const addSubscriber = async (subscriberData) => {
     });
 
     const data = await response.json();
+    console.log('Server response:', data);
 
     if (!response.ok) {
-      throw new Error(data.error || 'Failed to add subscriber');
+      // Show more detailed error from server
+      throw new Error(data.message || 'Failed to add subscriber');
     }
 
     return data;
@@ -91,23 +99,22 @@ export const addSubscriber = async (subscriberData) => {
 
 export const sendNewsletter = async (newsletterData) => {
   try {
-    const response = await fetch(`${API_BASE_URL}/api/send-newsletter`, {
+    const response = await fetch('/api/send-newsletter', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
       },
       body: JSON.stringify(newsletterData)
     });
-
-    const data = await response.json();
-
+    
     if (!response.ok) {
-      throw new Error(data.error || 'Failed to send newsletter');
+      const errorData = await response.json();
+      throw new Error(errorData.message || 'Failed to send newsletter');
     }
-
-    return data;
+    
+    return await response.json();
   } catch (error) {
-    console.error('Failed to send newsletter:', error);
+    console.error('API error sending newsletter:', error);
     throw error;
   }
 };

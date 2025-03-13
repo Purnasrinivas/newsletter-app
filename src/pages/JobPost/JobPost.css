@@ -9,7 +9,7 @@ body {
 .job-post-page {
   max-width: 800px;
   margin: 0 auto;
-  padding: 48px 24px;
+  padding: 20px;
 }
 
 .job-post-page h1 {
@@ -23,35 +23,77 @@ body {
 .job-post-form {
   display: flex;
   flex-direction: column;
-  gap: 20px;
-  background: #ffffff;
-  padding: 32px;
-  border-radius: 16px;
-  box-shadow: 0 4px 24px rgba(0, 0, 0, 0.04);
+  gap: 15px;
 }
 
 .job-post-input,
 .job-post-textarea {
-  width: 100%;
-  padding: 12px 16px;
-  border: 1px solid #d2d2d7;
-  border-radius: 10px;
+  padding: 10px;
+  border: 1px solid #ddd;
+  border-radius: 4px;
   font-size: 16px;
-  font-family: inherit;
-  transition: all 0.2s ease;
-  box-sizing: border-box;
-}
-
-.job-post-input:focus,
-.job-post-textarea:focus {
-  outline: none;
-  border-color: #0071e3;
-  box-shadow: 0 0 0 4px rgba(0, 113, 227, 0.1);
 }
 
 .job-post-textarea {
   min-height: 150px;
   resize: vertical;
+}
+
+.form-group {
+  margin-bottom: 20px;
+}
+
+.form-group label {
+  display: block;
+  margin-bottom: 5px;
+  font-weight: bold;
+}
+
+.helper-text {
+  font-size: 14px;
+  color: #666;
+  margin-bottom: 10px;
+}
+
+.category-select {
+  width: 100%;
+  min-height: 120px;
+  padding: 10px;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  margin-bottom: 15px;
+}
+
+.submit-button {
+  background-color: #4CAF50;
+  color: white;
+  border: none;
+  padding: 12px;
+  border-radius: 4px;
+  font-size: 16px;
+  cursor: pointer;
+}
+
+.submit-button:disabled {
+  background-color: #cccccc;
+  cursor: not-allowed;
+}
+
+.success-message {
+  background-color: #d4edda;
+  color: #155724;
+  padding: 16px;
+  margin-bottom: 24px;
+  border-radius: 10px;
+  font-size: 16px;
+  text-align: center;
+  border: 1px solid #c3e6cb;
+  animation: fadeIn 0.5s;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(-10px); }
+  to { opacity: 1; transform: translateY(0); }
 }
 
 .categories-section {
@@ -77,8 +119,22 @@ body {
 
 .categories-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(175px, 1fr));
-  gap: 12px;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  gap: 10px;
+}
+
+.category-checkbox {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+}
+
+.category-checkbox input[type="checkbox"] {
+  width: 18px;
+  height: 18px;
 }
 
 .category-button {
@@ -103,43 +159,11 @@ body {
   box-shadow: 0 2px 6px rgba(0, 113, 227, 0.2);
 }
 
-.submit-button {
-  background: #0071e3;
-  color: #ffffff;
-  padding: 14px;
-  border: none;
-  border-radius: 10px;
-  font-size: 17px;
-  font-weight: 500;
-  cursor: pointer;
-  transition: all 0.2s ease;
-  margin-top: 8px;
-}
-
-.submit-button:hover {
-  background: #0077ed;
-  transform: translateY(-1px);
-}
-
-.submit-button:disabled {
-  background: #d2d2d7;
-  cursor: not-allowed;
-  transform: none;
-}
-
-.success-message {
-  background-color: #d4edda;
-  color: #155724;
-  padding: 16px;
-  margin-bottom: 24px;
-  border-radius: 10px;
-  font-size: 16px;
-  text-align: center;
-  border: 1px solid #c3e6cb;
-  animation: fadeIn 0.5s;
-}
-
-@keyframes fadeIn {
-  from { opacity: 0; transform: translateY(-10px); }
-  to { opacity: 1; transform: translateY(0); }
+.job-post-select {
+  width: 100%;
+  min-height: 120px;
+  padding: 8px;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  margin-bottom: 20px;
 }

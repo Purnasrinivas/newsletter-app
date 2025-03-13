@@ -1,65 +1,63 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { submitJob } from '../../services/api';
-import { setJobsComponentMounted } from '../../state/jobState';
 import './Jobs.css';
 
-console.log('Jobs component file loaded');
+const categories = [
+  'Software Developer',
+  'DevOps Engineer',
+  'Data Analyst',
+  'UI/UX Designer',
+  'Project Manager'
+];
 
 function Jobs() {
-  console.log('Jobs component rendering');
-
   const [jobData, setJobData] = useState({
     title: '',
     company: '',
     location: '',
     description: '',
     requirements: '',
-    applyLink: ''
+    applyLink: '',
+    category: []
   });
   const [loading, setLoading] = useState(false);
 
-  // Add debugging for form changes
   const handleChange = (e) => {
     const { name, value } = e.target;
-    console.log(`Form field changed: ${name} = ${value}`);
-    setJobData(prev => ({ ...prev, [name]: value }));
+    setJobData(prev => ({
+      ...prev,
+      [name]: value
+    }));
   };
 
-  useEffect(() => {
-    console.log('Jobs component mounted');
-    setJobsComponentMounted(true);
-    
-    // Add debugging for navigation
-    const handleBeforeUnload = () => {
-      console.log('Jobs component about to unmount');
-    };
-    window.addEventListener('beforeunload', handleBeforeUnload);
-    
-    return () => {
-      console.log('Jobs component unmounting');
-      setJobsComponentMounted(false);
-      window.removeEventListener('beforeunload', handleBeforeUnload);
-    };
-  }, []);
+  const handleCategoryChange = (category) => {
+    setJobData(prev => ({
+      ...prev,
+      category: prev.category.includes(category)
+        ? prev.category.filter(c => c !== category)
+        : [...prev.category, category]
+    }));
+  };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    e.stopPropagation(); // Prevent event bubbling
+    e.stopPropagation();
     setLoading(true);
     console.log('Jobs component handleSubmit called');
     console.log('Current jobData:', jobData);
 
     try {
       // Format job data
-      // Format job data
-const formattedJobData = {
-  title: jobData.title,
-  company: jobData.company,
-  location: jobData.location || 'Remote',
-  description: jobData.description,
-  requirements: jobData.requirements || 'Not specified',
-  link: jobData.applyLink  // Change this from applyLink to link
-};
+      const formattedJobData = {
+        title: jobData.title,
+        company: jobData.company,
+        location: jobData.location || 'Remote',
+        description: jobData.description,
+        requirements: jobData.requirements || 'Not specified',
+        link: jobData.applyLink,
+        category: jobData.category  // Include the categories
+      };
+      
       console.log('Submitting formatted job data:', formattedJobData);
       const response = await submitJob(formattedJobData);
       console.log('Server response:', response);
@@ -72,7 +70,8 @@ const formattedJobData = {
           location: '',
           description: '',
           requirements: '',
-          applyLink: ''
+          applyLink: '',
+          category: []
         });
       } else {
         throw new Error(response.message || 'Failed to post job');
@@ -88,6 +87,7 @@ const formattedJobData = {
   return (
     <div className="jobs-page">
       <h1>Post a New Job</h1>
+      
       <form onSubmit={handleSubmit} className="job-form">
         <div className="form-group">
           <label htmlFor="title">Job Title</label>
@@ -97,10 +97,11 @@ const formattedJobData = {
             name="title"
             value={jobData.title}
             onChange={handleChange}
+            placeholder="e.g. Senior React Developer"
             required
           />
         </div>
-
+        
         <div className="form-group">
           <label htmlFor="company">Company Name</label>
           <input
@@ -109,10 +110,11 @@ const formattedJobData = {
             name="company"
             value={jobData.company}
             onChange={handleChange}
+            placeholder="e.g. Acme Inc."
             required
           />
         </div>
-
+        
         <div className="form-group">
           <label htmlFor="location">Location</label>
           <input
@@ -121,10 +123,10 @@ const formattedJobData = {
             name="location"
             value={jobData.location}
             onChange={handleChange}
-            placeholder="Remote"
+            placeholder="e.g. Remote, New York, etc."
           />
         </div>
-
+        
         <div className="form-group">
           <label htmlFor="description">Job Description</label>
           <textarea
@@ -132,10 +134,11 @@ const formattedJobData = {
             name="description"
             value={jobData.description}
             onChange={handleChange}
+            placeholder="Describe the job role, responsibilities, etc."
             required
           />
         </div>
-
+        
         <div className="form-group">
           <label htmlFor="requirements">Requirements</label>
           <textarea
@@ -143,10 +146,10 @@ const formattedJobData = {
             name="requirements"
             value={jobData.requirements}
             onChange={handleChange}
-            placeholder="List job requirements..."
+            placeholder="List the required skills, experience, etc."
           />
         </div>
-
+        
         <div className="form-group">
           <label htmlFor="applyLink">Application Link</label>
           <input
@@ -160,10 +163,28 @@ const formattedJobData = {
           />
         </div>
 
+        {/* Category Selection */}
+        <div className="form-group">
+          <label>Job Categories (Select at least one)</label>
+          <div className="category-options">
+            {categories.map(category => (
+              <div key={category} className="category-option">
+                <input
+                  type="checkbox"
+                  id={`category-${category}`}
+                  checked={jobData.category.includes(category)}
+                  onChange={() => handleCategoryChange(category)}
+                />
+                <label htmlFor={`category-${category}`}>{category}</label>
+              </div>
+            ))}
+          </div>
+        </div>
+
         <button 
           type="submit" 
           className="submit-button"
-          disabled={loading}
+          disabled={loading || jobData.category.length === 0}
         >
           {loading ? 'Posting...' : 'Post Job'}
         </button>
@@ -172,4 +193,4 @@ const formattedJobData = {
   );
 }
 
-export default Jobs; 
+export default Jobs;

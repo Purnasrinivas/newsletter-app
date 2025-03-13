@@ -51,19 +51,21 @@ const jobSchema = new mongoose.Schema({
 
 const Job = mongoose.model('Job', jobSchema);
 
+const nodemailer = require('nodemailer');
+
 // Subscriber Schema
 const subscriberSchema = new mongoose.Schema({
-  name: {
-    type: String,
-    required: true,
-    trim: true
-  },
   email: {
     type: String,
     required: true,
     unique: true,
     trim: true,
     lowercase: true
+  },
+  name: {
+    type: String,
+    required: true,
+    trim: true
   },
   categories: [{
     type: String,
@@ -76,6 +78,84 @@ const subscriberSchema = new mongoose.Schema({
 });
 
 const Subscriber = mongoose.model('Subscriber', subscriberSchema);
+
+// Add subscriber route
+app.post('/api/subscribers', async (req, res) => {
+  try {
+    const { email, name, categories } = req.body;
+    
+    // Check if subscriber already exists
+    const existingSubscriber = await Subscriber.findOne({ email });
+    if (existingSubscriber) {
+      return res.status(400).json({
+        success: false,
+        message: 'Email already subscribed'
+      });
+    }
+    
+    // Create new subscriber
+    const subscriber = new Subscriber({
+      email,
+      name,
+      categories: categories || []
+    });
+    
+    // Save to database
+    const savedSubscriber = await subscriber.save();
+    console.log('New subscriber saved:', savedSubscriber);
+    
+    // Send welcome email
+    try {
+      // Create transporter
+      const transporter = nodemailer.createTransport({
+        service: 'gmail',
+        auth: {
+          user: process.env.GMAIL_EMAIL || 'justsrinivas77@gmail.com',
+          pass: process.env.GMAIL_APP_PASSWORD
+        }
+      });
+      
+      // Send welcome email
+      const mailOptions = {
+        from: process.env.GMAIL_EMAIL || 'justsrinivas77@gmail.com',
+        to: email,
+        subject: 'Welcome to Job Newsletter',
+        html: `
+          <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
+            <h2>Welcome to Job Newsletter, ${name}!</h2>
+            <p>Thank you for subscribing to our job newsletter. You will receive updates for the following categories:</p>
+            <ul>
+              ${categories.map(cat => `<li>${cat}</li>`).join('')}
+            </ul>
+            <p>We'll keep you updated with the latest job opportunities.</p>
+            <p>Best regards,<br>Job Newsletter Team</p>
+          </div>
+        `
+      };
+      
+      await transporter.sendMail(mailOptions);
+      console.log('Welcome email sent to:', email);
+      
+    } catch (emailError) {
+      // Log email error but don't fail the request
+      console.error('Error sending welcome email:', emailError);
+    }
+    
+    res.status(201).json({
+      success: true,
+      message: 'Subscription successful',
+      data: savedSubscriber
+    });
+    
+  } catch (error) {
+    console.error('Error adding subscriber:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Failed to save subscriber',
+      error: error.message
+    });
+  }
+});
 
 // API Routes for jobs
 app.get('/api/jobs', async (req, res) => {
@@ -121,34 +201,77 @@ app.post('/api/jobs', async (req, res) => {
   }
 });
 
-// Subscriber routes
-app.post('/api/subscribers', async (req, res) => {
+// Update job route
+app.put('/api/jobs/:id', async (req, res) => {
   try {
-    const subscriber = new Subscriber(req.body);
-    const savedSubscriber = await subscriber.save();
-    res.status(201).json({
+    const { id } = req.params;
+    const updatedJob = await Job.findByIdAndUpdate(
+      id,
+      req.body,
+      { new: true, runValidators: true }
+    );
+    
+    if (!updatedJob) {
+      return res.status(404).json({
+        success: false,
+        message: 'Job not found'
+      });
+    }
+    
+    res.status(200).json({
       success: true,
-      data: savedSubscriber
+      data: updatedJob
     });
   } catch (error) {
-    console.error('Error saving subscriber:', error);
-    res.status(500).json({ 
-      success: false, 
-      error: 'Failed to save subscriber',
-      details: error.message 
+    console.error('Error updating job:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Failed to update job',
+      error: error.message
     });
   }
 });
 
-app.get('/api/subscribers', async (req, res) => {
+// Subscriber routes
+app.post('/api/subscribers', async (req, res) => {
   try {
-    const subscribers = await Subscriber.find();
-    res.status(200).json(subscribers);
+    const { email, name, categories } = req.body;
+    
+    console.log('Received subscriber data:', { email, name, categoriesCount: categories?.length || 0 });
+    
+    // Check if subscriber already exists
+    const existingSubscriber = await Subscriber.findOne({ email });
+    
+    if (existingSubscriber) {
+      console.log('Email already exists:', email);
+      return res.status(400).json({
+        success: false,
+        message: 'This email is already subscribed. Please use a different email address.'
+      });
+    }
+    
+    // Create new subscriber
+    const subscriber = new Subscriber({
+      email,
+      name,
+      categories: categories || []
+    });
+    
+    const savedSubscriber = await subscriber.save();
+    console.log('Subscriber saved successfully:', email);
+    
+    // Send welcome email...
+    
+    return res.status(201).json({
+      success: true,
+      message: 'Successfully subscribed!'
+    });
   } catch (error) {
-    console.error('Error fetching subscribers:', error);
-    res.status(500).json({ 
-      success: false, 
-      error: 'Failed to fetch subscribers' 
+    console.error('Subscription error:', error);
+    return res.status(500).json({
+      success: false,
+      message: 'Failed to save subscriber',
+      error: error.message
     });
   }
 });
@@ -209,6 +332,7 @@ app.post('/api/send-newsletter', async (req, res) => {
     
     // Find subscribers
     const subscribers = await Subscriber.find(query);
+    console.log(`Found ${subscribers.length} subscribers for categories: ${categories.join(', ')}`);
     
     if (subscribers.length === 0) {
       return res.status(200).json({
@@ -217,12 +341,49 @@ app.post('/api/send-newsletter', async (req, res) => {
       });
     }
     
-    // In a real application, you would send emails here
-    // For now, we'll just simulate success
+    // Create transporter
+    const transporter = nodemailer.createTransport({
+      service: 'gmail',
+      auth: {
+        user: process.env.GMAIL_EMAIL,
+        pass: process.env.GMAIL_APP_PASSWORD
+      }
+    });
+    
+    // Send newsletter to each subscriber
+    for (const subscriber of subscribers) {
+      const mailOptions = {
+        from: process.env.GMAIL_EMAIL,
+        to: subscriber.email,
+        subject: subject,
+        html: `
+          <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
+            <h1>${subject}</h1>
+            <p>${intro}</p>
+            
+            ${jobs.map(job => `
+              <div style="margin: 20px 0; padding: 15px; border: 1px solid #ddd; border-radius: 8px;">
+                <h2>${job.title}</h2>
+                <p><strong>Company:</strong> ${job.company}</p>
+                <p><strong>Location:</strong> ${job.location}</p>
+                <div style="margin: 15px 0;">
+                  ${job.description.replace(/\n/g, '<br>')}
+                </div>
+                <a href="${job.link}" style="display: inline-block; padding: 10px 15px; background-color: #4CAF50; color: white; text-decoration: none; border-radius: 4px;">Apply Now</a>
+              </div>
+            `).join('')}
+            
+            <p>${outro.replace(/\n/g, '<br>')}</p>
+          </div>
+        `
+      };
+      
+      await transporter.sendMail(mailOptions);
+    }
     
     res.status(200).json({
       success: true,
-      message: `Newsletter would be sent to ${subscribers.length} subscribers`
+      message: `Newsletter sent to ${subscribers.length} subscribers`
     });
   } catch (error) {
     console.error('Error sending newsletter:', error);

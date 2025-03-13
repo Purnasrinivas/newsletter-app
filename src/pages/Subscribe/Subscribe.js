@@ -18,6 +18,7 @@ function Subscribe() {
   });
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitSuccess, setSubmitSuccess] = useState(false);
+  const [errorMessage, setErrorMessage] = useState(''); // Added missing state
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -40,6 +41,7 @@ function Subscribe() {
     e.preventDefault();
     setIsSubmitting(true);
     setSubmitSuccess(false);
+    setErrorMessage(''); // Clear any previous errors
 
     try {
       const subscriberData = {
@@ -58,7 +60,11 @@ function Subscribe() {
       });
     } catch (error) {
       console.error('Error subscribing:', error);
-      alert(error.message || 'Failed to subscribe');
+      setErrorMessage(
+        error.message === 'This email is already subscribed. Please use a different email address.' 
+          ? error.message 
+          : 'There was a problem submitting your subscription. Please try again.'
+      );
     } finally {
       setIsSubmitting(false);
     }
@@ -77,6 +83,12 @@ function Subscribe() {
           {submitSuccess && (
             <div className="success-message">
               Thank you for subscribing! You'll start receiving job newsletters soon.
+            </div>
+          )}
+
+          {errorMessage && (
+            <div className="error-message">
+              {errorMessage}
             </div>
           )}
           
@@ -108,7 +120,7 @@ function Subscribe() {
                 className="subscribe-input"
               />
             </div>
-            
+
             <div className="form-group">
               <label>Categories of Interest</label>
               <p className="category-help-text">Select all categories you're interested in receiving updates about.</p>
@@ -125,7 +137,7 @@ function Subscribe() {
                 ))}
               </div>
             </div>
-            
+
             <button 
               type="submit" 
               disabled={isSubmitting || subscriber.categories.length === 0}

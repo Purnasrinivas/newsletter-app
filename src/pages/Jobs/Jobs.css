@@ -61,3 +61,19 @@
   background: #ccc;
   cursor: not-allowed;
 } 
+.category-options {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin: 5px 0 15px;
+}
+
+.category-option {
+  display: flex;
+  align-items: center;
+  margin-right: 15px;
+}
+
+.category-option input[type="checkbox"] {
+  margin-right: 5px;
+}

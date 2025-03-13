@@ -31,7 +31,6 @@ function JobPost() {
   };
 
   const handleCategoryChange = (category) => {
-    console.log('Category clicked:', category);
     setJob(prev => ({
       ...prev,
       category: prev.category.includes(category)
@@ -46,7 +45,10 @@ function JobPost() {
     setSubmitSuccess(false);
 
     try {
-      console.log('Submitting job with categories:', job.category);
+      if (job.category.length === 0) {
+        throw new Error('Please select at least one job category');
+      }
+      
       const jobData = {
         title: job.title.trim(),
         company: job.company.trim(),
@@ -79,12 +81,8 @@ function JobPost() {
 
   return (
     <div className="job-post-page">
-      <h1>Post a Job</h1>
-      {submitSuccess && (
-        <div className="success-message">
-          Job posted successfully! Check the Newsletter tab.
-        </div>
-      )}
+      <h1>Post a New Job</h1>
+      
       <form onSubmit={handleSubmit} className="job-post-form">
         <input
           type="text"
@@ -100,7 +98,7 @@ function JobPost() {
           name="company"
           value={job.company}
           onChange={handleChange}
-          placeholder="Company"
+          placeholder="Company Name"
           required
           className="job-post-input"
         />
@@ -109,7 +107,7 @@ function JobPost() {
           name="location"
           value={job.location}
           onChange={handleChange}
-          placeholder="Location (default: Remote)"
+          placeholder="Job Location (e.g. Remote, New York)"
           className="job-post-input"
         />
         <textarea
@@ -130,25 +128,49 @@ function JobPost() {
           className="job-post-input"
         />
         
-        <div className="categories-section">
-          <h3>Job Categories (Required)</h3>
-          <p className="category-help-text">Select all categories that apply to this job posting.</p>
+        <div className="form-group">
+          <label>Job Categories (Required)</label>
+          <p className="helper-text">Select one or more categories for this job</p>
+          
+          {/* Category Selection - Multiple Select Dropdown */}
+          <select 
+            multiple
+            value={job.category}
+            onChange={(e) => {
+              const selectedCategories = Array.from(e.target.selectedOptions, option => option.value);
+              setJob(prev => ({
+                ...prev,
+                category: selectedCategories
+              }));
+            }}
+            className="category-select"
+            required
+          >
+            {jobCategories.map(category => (
+              <option key={category} value={category}>
+                {category}
+              </option>
+            ))}
+          </select>
+          
+          {/* Alternative Category Selection - Checkboxes */}
           <div className="categories-grid">
             {jobCategories.map(category => (
-              <button
-                key={category}
-                type="button"
-                className={`category-button ${job.category.includes(category) ? 'selected' : ''}`}
-                onClick={() => handleCategoryChange(category)}
-              >
-                {category}
-              </button>
+              <div key={category} className="category-checkbox">
+                <input
+                  type="checkbox"
+                  id={`category-${category}`}
+                  checked={job.category.includes(category)}
+                  onChange={() => handleCategoryChange(category)}
+                />
+                <label htmlFor={`category-${category}`}>{category}</label>
+              </div>
             ))}
           </div>
         </div>
         
         <button 
-          type="submit" 
+          type="submit"
           disabled={isSubmitting || job.category.length === 0}
           className="submit-button"
         >
