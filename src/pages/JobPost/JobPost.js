@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { submitJob } from '../../services/api';
 import './JobPost.css';
+import { useToast } from '../../context/ToastContext';
 
 const jobCategories = [
   'Software Developer',
@@ -11,27 +12,27 @@ const jobCategories = [
 ];
 
 function JobPost() {
-  const [job, setJob] = useState({
+  const { addToast } = useToast();
+  const [jobData, setJobData] = useState({
     title: '',
     company: '',
-    location: 'Remote',
+    location: '',
     description: '',
     link: '',
     category: []
   });
-  const [isSubmitting, setIsSubmitting] = useState(false);
-  const [submitSuccess, setSubmitSuccess] = useState(false);
+  const [loading, setLoading] = useState(false);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
-    setJob(prevJob => ({
-      ...prevJob,
+    setJobData(prev => ({
+      ...prev,
       [name]: value
     }));
   };
 
-  const handleCategoryChange = (category) => {
-    setJob(prev => ({
+  const handleCategoryToggle = (category) => {
+    setJobData(prev => ({
       ...prev,
       category: prev.category.includes(category)
         ? prev.category.filter(c => c !== category)
@@ -41,148 +42,147 @@ function JobPost() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setIsSubmitting(true);
-    setSubmitSuccess(false);
-
+    
     try {
-      if (job.category.length === 0) {
-        throw new Error('Please select at least one job category');
-      }
-      
-      const jobData = {
-        title: job.title.trim(),
-        company: job.company.trim(),
-        description: job.description.trim(),
-        link: job.link.trim(),
-        location: job.location?.trim() || 'Remote',
-        category: job.category
-      };
-
-      const savedJob = await submitJob(jobData);
-      console.log('Job saved successfully:', savedJob);
-      
-      setSubmitSuccess(true);
-      alert('Job posted successfully! Check the Newsletter tab.');
-      setJob({
+      setLoading(true);
+      await submitJob(jobData);
+      addToast('Job posted successfully!', 'success');
+      setJobData({
         title: '',
         company: '',
-        location: 'Remote',
+        location: '',
         description: '',
         link: '',
         category: []
       });
     } catch (error) {
-      console.error('Error posting job:', error);
-      alert(error.message || 'Failed to post job');
+      console.error('Error submitting job:', error);
+      addToast(`Failed to submit job: ${error.message}`, 'error');
     } finally {
-      setIsSubmitting(false);
+      setLoading(false);
     }
+  };
+
+  const isFormValid = () => {
+    return (
+      jobData.title.trim() !== '' &&
+      jobData.company.trim() !== '' &&
+      jobData.location.trim() !== '' &&
+      jobData.description.trim() !== '' &&
+      jobData.link.trim() !== '' &&
+      jobData.category.length > 0
+    );
   };
 
   return (
     <div className="job-post-page">
-      <h1>Post a New Job</h1>
-      
-      
-      {submitSuccess && (
-        <div className="success-message">
-          Job posted successfully! Check the Newsletter tab.
-        </div>
-      )}
-      
-      <form onSubmit={handleSubmit} className="job-post-form">
-        <div className="form-group">
-          <label htmlFor="title">Job Title</label>
-          <input
-            type="text"
-            id="title"
-            name="title"
-            value={job.title}
-            onChange={handleChange}
-            placeholder="e.g. Senior React Developer"
-            required
-            className="job-post-input"
-          />
-        </div>
+      <div className="page-header">
+        <h1>Post a New Job</h1>
+        <p className="page-description">
+          Fill out the form below to post a new job opportunity to our newsletter.
+        </p>
+      </div>
 
-        <div className="form-group">
-          <label htmlFor="company">Company</label>
-          <input
-            type="text"
-            id="company"
-            name="company"
-            value={job.company}
-            onChange={handleChange}
-            placeholder="Company Name"
-            required
-            className="job-post-input"
-          />
-        </div>
-
-        <div className="form-group">
-          <label htmlFor="location">Location</label>
-          <input
-            type="text"
-            id="location"
-            name="location"
-            value={job.location}
-            onChange={handleChange}
-            placeholder="e.g. Remote, New York, etc."
-            className="job-post-input"
-          />
-        </div>
-
-        <div className="form-group">
-          <label htmlFor="description">Job Description</label>
-          <textarea
-            id="description"
-            name="description"
-            value={job.description}
-            onChange={handleChange}
-            placeholder="Describe the job responsibilities, requirements, etc."
-            required
-            className="job-post-textarea"
-          />
-        </div>
-
-        <div className="form-group categories-section">
-          <label>Job Categories (Required)</label>
-          <p className="helper-text">Select one or more categories for this job</p>
-          
-          <div className="categories-grid">
-            {jobCategories.map(category => (
-              <button
-                key={category}
-                type="button"
-                className={`category-button ${job.category.includes(category) ? 'selected' : ''}`}
-                onClick={() => handleCategoryChange(category)}
-              >
-                {category}
-              </button>
-            ))}
+      <form className="job-post-form" onSubmit={handleSubmit}>
+        <div className="form-card">
+          <div className="form-section">
+            <h2>Job Details</h2>
+            
+            <div className="form-group">
+              <label htmlFor="title">Job Title*</label>
+              <input
+                type="text"
+                id="title"
+                name="title"
+                value={jobData.title}
+                onChange={handleChange}
+                placeholder="e.g. Senior Frontend Developer"
+                required
+              />
+            </div>
+            
+            <div className="form-group">
+              <label htmlFor="company">Company*</label>
+              <input
+                type="text"
+                id="company"
+                name="company"
+                value={jobData.company}
+                onChange={handleChange}
+                placeholder="e.g. Acme Inc."
+                required
+              />
+            </div>
+            
+            <div className="form-group">
+              <label htmlFor="location">Location*</label>
+              <input
+                type="text"
+                id="location"
+                name="location"
+                value={jobData.location}
+                onChange={handleChange}
+                placeholder="e.g. Remote, New York, NY"
+                required
+              />
+            </div>
           </div>
-        </div>
-
-        <div className="form-group">
-          <label htmlFor="link">Application Link</label>
-          <input
-            type="url"
-            id="link"
-            name="link"
-            value={job.link}
-            onChange={handleChange}
-            placeholder="https://..."
-            required
-            className="job-post-input"
-          />
+          
+          <div className="form-section">
+            <h2>Job Description</h2>
+            
+            <div className="form-group">
+              <label htmlFor="description">Description*</label>
+              <textarea
+                id="description"
+                name="description"
+                value={jobData.description}
+                onChange={handleChange}
+                placeholder="Provide a detailed description of the job..."
+                required
+              />
+              <p className="helper-text">Include responsibilities, requirements, and any other relevant information.</p>
+            </div>
+            
+            <div className="form-group">
+              <label htmlFor="link">Application Link*</label>
+              <input
+                type="url"
+                id="link"
+                name="link"
+                value={jobData.link}
+                onChange={handleChange}
+                placeholder="https://example.com/apply"
+                required
+              />
+              <p className="helper-text">Direct link where candidates can apply for this position.</p>
+            </div>
+          </div>
+          
+          <div className="form-section">
+            <h2>Job Categories</h2>
+            <p className="helper-text">Select at least one category that best describes this job.</p>
+            
+            <div className="categories-grid">
+              {jobCategories.map(category => (
+                <div 
+                  key={category}
+                  className={`category-button ${jobData.category.includes(category) ? 'selected' : ''}`}
+                  onClick={() => handleCategoryToggle(category)}
+                >
+                  {category}
+                </div>
+              ))}
+            </div>
+          </div>
         </div>
         
         <button 
-          type="submit"
-          disabled={isSubmitting || job.category.length === 0}
+          type="submit" 
           className="submit-button"
+          disabled={loading || !isFormValid()}
         >
-          {isSubmitting ? 'Posting...' : 'Post Job'}
+          {loading ? 'Posting...' : 'Post Job'}
         </button>
       </form>
     </div>
